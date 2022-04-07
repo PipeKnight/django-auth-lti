@@ -32,18 +32,18 @@ def reverse(*args, **kwargs):
     if not exclude_resource_link_id:
         # Append resource_link_id query param if exclude_resource_link_id kwarg
         # was not passed or is False
-        logger.info('URL: {}'.format(url))
+        logger.info(f'URL: {url}')
         parsed = urlparse(url)
-        logger.info('Pared URL: {}'.format(parsed))
+        logger.info(f'Pared URL: {parsed}')
         query = parse_qs(parsed.query)
-        logger.info('Query: {}'.format(query))
+        logger.info(f'Query: {query}')
         if 'resource_link_id' not in list(query.keys()):
             query['resource_link_id'] = request.LTI.get('resource_link_id')
             url = urlunparse(
                 (parsed.scheme, parsed.netloc, parsed.path, parsed.params,
                  urlencode(query), parsed.fragment)
             )
-            logger.info('New URL: {}'.format(url))
+            logger.info(f'New URL: {url}')
     return url
 
 
