@@ -42,22 +42,22 @@ class LTIAuthBackend(ModelBackend):
         secret = settings.LTI_OAUTH_CREDENTIALS.get(request_key)
 
         if secret is None:
-            logger.error("Could not get a secret for key %s" % request_key)
+            logger.error(f"Could not get a secret for key {request_key}")
             raise PermissionDenied
 
-        logger.debug('using key/secret %s/%s' % (request_key, secret))
+        logger.debug(f'using key/secret {request_key}/{secret}')
         tool_provider = DjangoToolProvider.from_django_request(secret=secret, request=request)
 
         postparams = request.POST.dict()
 
-        logger.debug('request is secure: %s' % request.is_secure())
+        logger.debug(f'request is secure: {request.is_secure()}')
         for key in postparams:
-            logger.debug('POST %s: %s' % (key, postparams.get(key)))
+            logger.debug(f'POST {key}: {postparams.get(key)}')
 
-        logger.debug('request abs url is %s' % request.build_absolute_uri())
+        logger.debug(f'request abs url is {request.build_absolute_uri()}')
 
         for key in request.META:
-            logger.debug('META %s: %s' % (key, request.META.get(key)))
+            logger.debug(f'META {key}: {request.META.get(key)}')
 
         logger.info("about to check the signature")
 
@@ -97,7 +97,7 @@ class LTIAuthBackend(ModelBackend):
         first_name = tool_provider.lis_person_name_given
         last_name = tool_provider.lis_person_name_family
 
-        logger.info("We have a valid username: %s" % username)
+        logger.info(f"We have a valid username: {username}")
 
         UserModel = get_user_model()
 
@@ -110,9 +110,9 @@ class LTIAuthBackend(ModelBackend):
             })
 
             if created:
-                logger.debug('authenticate created a new user for %s' % username)
+                logger.debug(f'authenticate created a new user for {username}')
             else:
-                logger.debug('authenticate found an existing user for %s' % username)
+                logger.debug(f'authenticate found an existing user for {username}')
 
         else:
             logger.debug(
@@ -120,10 +120,7 @@ class LTIAuthBackend(ModelBackend):
             try:
                 user = UserModel.objects.get_by_natural_key(username)
             except UserModel.DoesNotExist:
-                logger.debug('authenticate could not find user %s' % username)
-                # should return some kind of error here?
-                pass
-
+                logger.debug(f'authenticate could not find user {username}')
         # update the user
         if email:
             user.email = email

@@ -13,10 +13,8 @@ register = template.Library()
 
 class ResourceLinkIdNode(template.Node):
     def render(self, context):
-        request = get_current_request()
-        if request:
-            rli = request.LTI.get('resource_link_id')
-            if rli:
+        if request := get_current_request():
+            if rli := request.LTI.get('resource_link_id'):
                 return format_html("<input type='hidden' name='resource_link_id' value='{}' />", rli)
             else:
                 logger.warning(

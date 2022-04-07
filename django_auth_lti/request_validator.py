@@ -36,9 +36,9 @@ class LTIRequestValidator(RequestValidator):
     def validate_timestamp_and_nonce(self, client_key, timestamp, nonce,
                                      request, request_token=None,
                                      access_token=None):
-        nonce_key = 'lti_nonce:{}-{}-{}-{}'.format(client_key, timestamp, nonce, request_token or access_token)
-        exists = cache.get(nonce_key)
-        if exists:
+        nonce_key = f'lti_nonce:{client_key}-{timestamp}-{nonce}-{request_token or access_token}'
+
+        if exists := cache.get(nonce_key):
             logger.debug("nonce already exists: %s", nonce)
             return False
         else:
