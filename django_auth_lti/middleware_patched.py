@@ -39,7 +39,7 @@ class MultiLTILaunchAuthMiddleware(MiddlewareMixin):
     """
 
     def process_request(self, request):
-        logger.debug('inside process_request %s' % request.path)
+        logger.debug(f'inside process_request {request.path}')
 
         # AuthenticationMiddleware is required so that request.user exists.
         if not hasattr(request, 'user'):
@@ -58,7 +58,7 @@ class MultiLTILaunchAuthMiddleware(MiddlewareMixin):
             # authenticate and log the user in
             with Timer() as t:
                 user = auth.authenticate(request=request)
-            logger.debug('authenticate() took %s s' % t.secs)
+            logger.debug(f'authenticate() took {t.secs} s')
 
             if user is not None:
                 # User is valid.  Set request.user and persist user in the session
@@ -69,7 +69,7 @@ class MultiLTILaunchAuthMiddleware(MiddlewareMixin):
                 with Timer() as t:
                     auth.login(request, user)
 
-                logger.debug('login() took %s s' % t.secs)
+                logger.debug(f'login() took {t.secs} s')
 
                 resource_link_id = request.POST.get('resource_link_id', None)
                 lti_launch = {
@@ -138,7 +138,10 @@ class MultiLTILaunchAuthMiddleware(MiddlewareMixin):
 
                 # Limit the number of LTI launches stored in the session
                 max_launches = getattr(settings, 'LTI_AUTH_MAX_LAUNCHES', 10)
-                logger.info("LTI launch count %s [max=%s]" % (len(list(lti_launches.keys())), max_launches))
+                logger.info(
+                    f"LTI launch count {len(list(lti_launches.keys()))} [max={max_launches}]"
+                )
+
                 if len(list(lti_launches.keys())) >= max_launches:
                     # If the current resource is being re-launched, then we should just invalidate the old launch,
                     # otherwise we should evict the oldest launch (FIFO).
@@ -170,9 +173,9 @@ class MultiLTILaunchAuthMiddleware(MiddlewareMixin):
         backend_str = request.session[auth.BACKEND_SESSION_KEY]
         backend = auth.load_backend(backend_str)
         try:
-            logger.debug('calling the backend %s clean_username with %s' % (backend, username))
+            logger.debug(f'calling the backend {backend} clean_username with {username}')
             username = backend.clean_username(username)
-            logger.debug('cleaned username is %s' % username)
+            logger.debug(f'cleaned username is {username}')
         except AttributeError:  # Backend has no clean_username method.
             pass
         return username

@@ -24,7 +24,7 @@ class TestLTIAuthMiddleware(unittest.TestCase):
         Asserts that multiple LTI launches are maintained in the session.
         """
         mock_auth.authenticate.return_value = True
-        session = dict()
+        session = {}
         resource_link_ids = ('abc123', 'def456')
         for resource_link_id in resource_link_ids:
             request = self.build_lti_launch_request({"resource_link_id": resource_link_id})
@@ -48,12 +48,12 @@ class TestLTIAuthMiddleware(unittest.TestCase):
         Asserts the constraint for maximum number of LTI launches.
         """
         mock_auth.authenticate.return_value = True
-        session = dict()
+        session = {}
         resource_link_ids = []
         total_launches = LTI_AUTH_MAX_LAUNCHES + 2
         for i in range(total_launches):
             launch_count = i + 1
-            resource_link_id = 'a312fb112a14f9' + str(i)
+            resource_link_id = f'a312fb112a14f9{str(i)}'
             resource_link_ids.append(resource_link_id)
 
             request = self.build_lti_launch_request({"resource_link_id": resource_link_id})
@@ -82,10 +82,10 @@ class TestLTIAuthMiddleware(unittest.TestCase):
         Asserts that the same tool relaunched will only occupy one slot.
         """
         mock_auth.authenticate.return_value = True
-        session = dict()
+        session = {}
         resource_link_id = 'a312fb112a14f9'
         total_launches = LTI_AUTH_MAX_LAUNCHES + 2
-        for i in range(total_launches):
+        for _ in range(total_launches):
             request = self.build_lti_launch_request({"resource_link_id": resource_link_id})
             request.session = session
             self.mw.process_request(request)
