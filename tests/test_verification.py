@@ -5,6 +5,12 @@ from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
 class TestVerification(TestCase):
 
+    def test_is_allowed_config_failure(self):
+        request = MagicMock(LTI={})
+        allowed_roles = ["admin", "student"]
+        self.assertRaises(ImproperlyConfigured, is_allowed,
+                          request, allowed_roles, False)
+
     def test_is_allowed_success(self):
         request = MagicMock(LTI={"roles": ["admin"]})
         allowed_roles = ["admin", "student"]
